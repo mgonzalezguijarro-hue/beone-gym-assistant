@@ -89,8 +89,32 @@ with st.sidebar:
             f'⭐ {actividad}', min_value=1, max_value=5,
             value=PUNTOS_INICIALES.get(actividad, 3), key=f'puntos_{actividad}',
         )
+
     st.header('Mi disponibilidad')
     st.caption('Configura los días y horas en los que podrías asistir.')
     disponibilidad = {}
+
     for day in DAYS:
         with st.expander(DAYS[day], expanded=day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']):
+            activo = st.checkbox(
+                'Disponible',
+                value=day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                key=f'active_{day}'
+            )
+            inicio = st.time_input(
+                'Desde',
+                value=datetime.strptime(
+                    '18:00' if day != 'Friday' else '17:00',
+                    '%H:%M'
+                ).time(),
+                key=f'from_{day}'
+            )
+            fin = st.time_input(
+                'Hasta',
+                value=datetime.strptime('21:30', '%H:%M').time(),
+                key=f'to_{day}'
+            )
+            disponibilidad[day] = (
+                inicio.strftime('%H:%M'),
+                fin.strftime('%H:%M')
+            ) if activo else None
