@@ -38,10 +38,28 @@ def descargar_clases(lunes_str):
                 clases.append({'fecha': fecha, 'nombre': nombre, 'inicio': clase['timeStart'][:5], 'fin': clase['timeEnd'][:5]})
     return clases
 
+
 hoy = datetime.now(ZoneInfo('Europe/Madrid')).date()
-lunes = hoy - timedelta(days=hoy.weekday())
+lunes_actual = hoy - timedelta(days=hoy.weekday())
+
+semana_elegida = st.selectbox(
+    "📅 ¿Qué semana quieres consultar?",
+    options=list(range(6)),
+    format_func=lambda n: (
+        "Esta semana" if n == 0
+        else "Próxima semana" if n == 1
+        else f"Dentro de {n} semanas"
+    )
+)
+
+lunes = lunes_actual + timedelta(weeks=semana_elegida)
 domingo = lunes + timedelta(days=6)
-st.subheader(f'📅 Semana del {lunes.strftime("%d/%m")} al {domingo.strftime("%d/%m/%Y")}')
+
+st.subheader(
+    f'📅 Semana del {lunes.strftime("%d/%m")} '
+    f'al {domingo.strftime("%d/%m/%Y")}'
+)
+
 if st.button('🔄 Actualizar mi semana', type='primary'):
     descargar_clases.clear()
 
