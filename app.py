@@ -32,10 +32,11 @@ def descargar_clases(lunes_str):
                     continue
                 vistos.add(identificador)
                 actividad = clase.get('activity') or {}
+                sala = (clase.get('room') or {}).get('room') or 'Sin especificar'
                 nombre = (actividad.get('name') or '').strip().upper()
                 if not nombre or not clase.get('timeStart') or not clase.get('timeEnd'):
                     continue
-                clases.append({'fecha': fecha, 'nombre': nombre, 'inicio': clase['timeStart'][:5], 'fin': clase['timeEnd'][:5]})
+                clases.append({'fecha': fecha, 'nombre': nombre, 'sala': sala, 'inicio': clase['timeStart'][:5], 'fin': clase['timeEnd'][:5]})
     return clases
 
 
@@ -120,7 +121,15 @@ else:
         dia = datetime.strptime(fecha,'%Y-%m-%d')
         st.markdown(f'### 📅 {DAYS[dia.strftime("%A")]} {dia.strftime("%d/%m")}')
         grupo = sorted((c for c in recomendaciones if c['fecha']==fecha), key=lambda c:(-c['Puntos'],c['inicio']))
-        df = pd.DataFrame(grupo).rename(columns={'nombre':'Actividad','inicio':'Inicio','fin':'Fin'})[['Actividad','Inicio','Fin','Puntos']]
+        
+        df = pd.DataFrame(grupo).rename(
+            columns={
+                'nombre': 'Actividad',
+                'inicio': 'Inicio',
+                'fin': 'Fin',
+                'sala': 'Sala'
+            }
+        )[['Actividad', 'Inicio', 'Fin', 'Sala', 'Puntos']]
         def color_puntos(valor):
             if valor >= 4: return 'background-color: #d4edda; color: #155724'
             if valor == 3: return 'background-color: #fff3cd; color: #856404'
